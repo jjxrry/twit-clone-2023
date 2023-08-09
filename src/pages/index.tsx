@@ -6,6 +6,7 @@ import { RouterOutputs, api } from "~/utils/api";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { LoadingPage } from "~/components/loading";
 
 dayjs.extend(relativeTime)
 
@@ -57,16 +58,32 @@ const PostView = (props: PostWithUser) => {
   )
 }
 
+const Feed = () => {
+  const { data, isLoading: postsLoading } = api.posts.getAll.useQuery()
 
+  if (postsLoading) return <LoadingPage/>
+
+  if (!data) return <div>Something went wrong!</div>
+
+  return (
+    <div>
+      {[...data, ...data]?.map((fullPost) => (
+        <PostView {...fullPost} key={fullPost.post.id}/>
+      ))}
+    </div>
+  )
+
+}
 
 const Home: NextPage = () =>{
 
-  const user = useUser()
-  const { data, isLoading } = api.posts.getAll.useQuery()
+  const {isLoaded: userLoaded, isSignedIn} = useUser()
 
-  if (isLoading) return <div>Loading...</div>
-  if (!data) return <div>Something went wrong!</div>
+  //fetch asap
+  api.posts.getAll.useQuery()
 
+  //return empty div if user is not loaded
+  if (!userLoaded) return <div/>
 
   return (
     <>
@@ -80,25 +97,16 @@ const Home: NextPage = () =>{
           <div className="flex border-b border-slate-400 p-4">
 
             {/* Render Sign In/Sign Out buttons based on user state */}
-            {!user.isSignedIn && (
+            {!isSignedIn && (
               <div className="flex justify-center">
                 <SignInButton />
               </div>
             )} 
-            {user.isSignedIn && <CreatePostWizard/>}
+            {isSignedIn && <CreatePostWizard/>}
 
           </div>
-          <div>
-            {/* this array that is being mapped is an array, 
-            the first argument is the database data, 
-            the second is the data that will be changed later (TEMP FIX) 
-            changed from "data?" ternary to allow for multiple tweets to show*/}
-            {[...data, ...data]?.map((fullPost) => (
-              <PostView {...fullPost} key={fullPost.post.id}/>
-            ))}
-          </div>
+          <Feed />
         </div>
-        <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up"/>
       </main>
     </>
   )
