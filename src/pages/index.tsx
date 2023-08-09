@@ -1,8 +1,9 @@
-import { SignIn, SignInButton, useUser } from "@clerk/nextjs";
-import { NextPage } from "next";
+import { SignInButton, useUser } from "@clerk/nextjs";
+import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { RouterOutputs, api } from "~/utils/api";
+import type { RouterOutputs } from "~/utils/api";
+import { api } from "~/utils/api";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
