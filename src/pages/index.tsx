@@ -8,12 +8,18 @@ import { RouterOutputs, api } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingPage } from "~/components/loading";
+import { useState } from "react";
 
 dayjs.extend(relativeTime)
 
 const CreatePostWizard = () => {
 
   const { user } = useUser();
+
+  const [input, setInput] = useState<string>('')
+
+  const { mutate } = api.posts.create.useMutation();
+  
 
   if (!user) return null;
 
@@ -28,7 +34,12 @@ const CreatePostWizard = () => {
     <input 
       placeholder="Tweet something!" 
       className="bg-transparent grow outline-none"
+      type="text"
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+
     />
+    <button onClick={() => mutate({ content: input })}> Post! </button>
   </div>
   )
 }
@@ -68,7 +79,7 @@ const Feed = () => {
 
   return (
     <div>
-      {[...data, ...data]?.map((fullPost) => (
+      {data.map((fullPost) => (
         <PostView {...fullPost} key={fullPost.post.id}/>
       ))}
     </div>
