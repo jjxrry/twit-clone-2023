@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingPage } from "~/components/loading";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 dayjs.extend(relativeTime)
 
@@ -22,6 +23,11 @@ const CreatePostWizard = () => {
     onSuccess: () => {
       setInput('')
       void ctx.posts.getAll.invalidate()
+      toast.success('Posted!')
+    },
+    // THESE CALLBACKS ARE EXECUTING BUT NOT SHOWING TOASTS OR CONSOLE LOG
+    onError: () => {
+      toast.error('Failed to post, please try again later!')
     }
   });
   
