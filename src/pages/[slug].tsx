@@ -1,8 +1,18 @@
 import { type NextPage } from "next";
 import Head from "next/head";
+import { api } from "~/utils/api";
 
 
-const ProfilePage: NextPage = () =>{
+const ProfilePage: NextPage = () => {
+
+  const { data, isLoading } = api.profile.getUserByUserName.useQuery({
+    username: 'jjxrry',
+  })
+
+  if (isLoading) return <div>Loading...</div>
+
+  if (!data) return <div>404</div>
+
   return (
     <>
       <Head>
@@ -12,7 +22,7 @@ const ProfilePage: NextPage = () =>{
       </Head>
       <main className="flex h-screen justify-center">
         <div>
-          Profile View
+          {`@${data.username}`}
         </div>
       </main>
     </>
