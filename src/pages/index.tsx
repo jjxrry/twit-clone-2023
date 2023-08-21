@@ -7,7 +7,7 @@ import { type RouterOutputs, api } from "~/utils/api";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { LoadingPage } from "~/components/loading";
+import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -25,9 +25,13 @@ const CreatePostWizard = () => {
       void ctx.posts.getAll.invalidate()
       toast.success('Posted!')
     },
-    // THESE CALLBACKS ARE EXECUTING BUT NOT SHOWING TOASTS OR CONSOLE LOG
-    onError: () => {
-      toast.error('Failed to post, please try again later!')
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors.content;
+      if(errorMessage?.[0]) {
+        toast.error(errorMessage[0])
+      } else {
+        toast.error('Failed to post! Please try again later.')
+      }
     }
   });
   
@@ -35,6 +39,7 @@ const CreatePostWizard = () => {
   if (!user) return null;
 
   return (<div className="flex gap-4 w-full">
+
     <Image 
       src={ user.imageUrl } 
       alt="profile image" 
@@ -42,15 +47,37 @@ const CreatePostWizard = () => {
       width={56}
       height={56}
     />
+
     <input 
       placeholder="Tweet something!" 
       className="bg-transparent grow outline-none"
       type="text"
       value={input}
       onChange={(e) => setInput(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          if (input !== '') {
+            mutate({ content: input })
+          }
+        }
+      }}
       disabled={isPosting}
     />
-    <button onClick={() => mutate({ content: input })}> Post! </button>
+
+    {/* logic for posting and disabled during isPosting */}
+    {input !== '' && !isPosting && (
+      <button onClick={() => mutate({ content: input })} disabled={isPosting}>
+        Post
+      </button>
+    )}
+
+    {/* placed loading spinner while isPosting completes */}
+    {isPosting && (
+      <div className="flex items-center justify-center">
+        <LoadingSpinner size={20}/>
+      </div>
+    )}
   </div>
   )
 }

@@ -8,7 +8,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider {...pageProps}>
       <Toaster 
-        // position="bottom-center"
+        position="bottom-center"
       />
       <Component {...pageProps} />
     </ClerkProvider>
