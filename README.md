@@ -1,3 +1,9 @@
+# Current Issues
+-Profile for Google Auth'd accounts are 404, need to look into this at a later time
+
+# Current Goals
+-Create Feed for indivudal profiles that match user
+
 # Create T3 App
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
